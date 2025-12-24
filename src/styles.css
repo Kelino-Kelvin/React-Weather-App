@@ -10,3 +10,9 @@
         font-style: normal;
     }
 }
+
+@layer utilities {
+    .weather-small-card{
+        @apply flex flex-col gap-1 pl-3 pr-9 py-2 rounded-lg backdrop-filter backdrop-blur-md bg-white/10
+    }
+}

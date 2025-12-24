@@ -1,6 +1,7 @@
 // Prelude
 import { useState, useEffect } from "react"
 import { API_KEY, BASE_URL } from "../config/env";
+import LoadingSpinner from "../assets/LoadingSpinner";
 
 function SearchBox({onCitySelect}) {
 
@@ -24,6 +25,7 @@ function SearchBox({onCitySelect}) {
             try {
                 setLoading(true);
                 setError(null);
+                setSuggestions([]);
 
                 const res = await fetch(
                     `${BASE_URL}/geo/1.0/direct?q=${query}&limit=5&appid=${API_KEY}`
@@ -50,11 +52,15 @@ function SearchBox({onCitySelect}) {
 
 
     function handleSelect(city) {
-        setQuery(`${city.name}, ${city.country}`);
+        setQuery(
+            `${city.name}${(city.name !== city.state) ? `, ${city.state}` : ''}, ${city.country}`
+        );
         setSelectedCity(city);
         setSuggestions([]);
         onCitySelect(city);
     }
+
+    const showWrapperBorder = loading || suggestions.length > 0;
     
 
     return (
@@ -70,22 +76,28 @@ function SearchBox({onCitySelect}) {
                 }}
             />
 
-            <div className="w-[75%] absolute top-[60px] flex flex-col">
-                {loading && <p>Searching...</p>}
+            <div className={`w-[75%] bg-neutral-950 ${showWrapperBorder ? 'border-2 border-blue-800' : ''} rounded-xl overflow-hidden absolute top-[60px] flex flex-col`}>
+                {loading && (
+                    <div className="mx-auto my-2">
+                        <LoadingSpinner searchBarRef={true}/>
+                    </div>
+                )}
                 {error && <p>{error}</p>}
 
                 {suggestions.length > 0 && (
                     <ul
-                        className="bg-white text-black rounded-[5px]"
+                        className=""
                     >
                         {suggestions.map((city) => {
                             return (    
                                 <li
                                     key={`${city.lat}-${city.lon}`}
                                     onClick={() => handleSelect(city)}
-                                    className="hover:bg-neutral-300 p-2 cursor-pointer"
+                                    className="hover:bg-neutral-100 hover:text-black p-2 cursor-pointer"
                                 >
-                                    {city.name}, {city.country}
+                                    {
+                                        `${city.name}${(city.name !== city.state) ? `, ${city.state}` : ''}, ${city.country}`
+                                    }
                                 </li>
                             )
                         })}
