@@ -13,6 +13,33 @@
 
 @layer utilities {
     .weather-small-card{
-        @apply flex flex-col gap-1 pl-3 pr-9 py-2 rounded-lg backdrop-filter backdrop-blur-md bg-white/10
+        @apply flex flex-col gap-1 px-4 py-2 rounded-lg backdrop-blur-md bg-white/10 text-nowrap shrink-0 min-w-[120px];
+    }
+
+    /* Scrollbar for Webkit browsers */
+    .scrollbar::-webkit-scrollbar {
+    width: 8px;               /* width of the scrollbar */
+    height: 8px;              /* optional for horizontal scrollbar */
+    }
+
+    .scrollbar::-webkit-scrollbar-track {
+    background: transparent;  /* track color */
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4); /* thumb color */
+    border-radius: 8px;                        /* round edges */
+    border: 2px solid transparent;             /* optional spacing around thumb */
+    background-clip: content-box;              /* makes border spacing visible */
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Firefox */
+    .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.4) transparent;
     }
 }

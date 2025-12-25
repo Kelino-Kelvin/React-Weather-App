@@ -53,7 +53,7 @@ function SearchBox({onCitySelect}) {
 
     function handleSelect(city) {
         setQuery(
-            `${city.name}${(city.name !== city.state) ? `, ${city.state}` : ''}, ${city.country}`
+            `${city.name}${city.state && (city.name !== city.state) ? `, ${city.state}` : ''}, ${city.country}`
         );
         setSelectedCity(city);
         setSuggestions([]);
@@ -76,6 +76,7 @@ function SearchBox({onCitySelect}) {
                 }}
             />
 
+            {/* suggestions */}
             <div className={`w-[75%] bg-neutral-950 ${showWrapperBorder ? 'border-2 border-blue-800' : ''} rounded-xl overflow-hidden absolute top-[60px] flex flex-col`}>
                 {loading && (
                     <div className="mx-auto my-2">
@@ -96,7 +97,7 @@ function SearchBox({onCitySelect}) {
                                     className="hover:bg-neutral-100 hover:text-black p-2 cursor-pointer"
                                 >
                                     {
-                                        `${city.name}${(city.name !== city.state) ? `, ${city.state}` : ''}, ${city.country}`
+                                        `${city.name}${city.state && (city.name !== city.state) ? `, ${city.state}` : ''}, ${city.country}`
                                     }
                                 </li>
                             )
