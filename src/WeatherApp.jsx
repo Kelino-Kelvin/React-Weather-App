@@ -19,40 +19,66 @@ function WeatherApp() {
     const [weather, setWeather] = useState(null);
     const [forecast, setForecast] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null)
+    const [error, setError] = useState(null);
+    const [onLoadName, setOnLoadName] = useState('📍 Near you');
 
+    const fetchweatherData = async (lat, lon) =>  {
+        setWeather(null);
+        setForecast(null)
 
+        try {
+            setLoading(true);
+            setError(null);
+
+            const [currentRes, forecastRes] = await Promise.all([
+                fetch(`${BASE_URL}/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`),
+                fetch(`${BASE_URL}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
+            ])
+            if(!currentRes.ok || !forecastRes.ok) {
+                throw new Error('Error Fetching Weather');
+            }
+
+            const weatherData = await currentRes.json();
+            const forecastData = await forecastRes.json();
+            setWeather(weatherData);
+            setForecast(forecastData.list);
+        } catch(err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // On window load get weather
+    useEffect(() => {
+        if (!navigator.geolocation) return;
+
+        try {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    fetchweatherData(latitude, longitude);
+                },
+                (error) => {
+                    throw new Error(`Location access denied: ${error.message}`);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0,
+                }
+            )
+        } catch (err) {
+            console.log(err.message);
+        }
+    }, []);
+    
+    // on search get weather
     useEffect(() => {
         if (!cityQuery) return
 
-        const fetchweatherData = async () =>  {
-            setWeather(null);
-            setForecast(null)
-
-            try {
-                setLoading(true);
-                setError(null);
-
-                const [currentRes, forecastRes] = await Promise.all([
-                    fetch(`${BASE_URL}/data/2.5/weather?lat=${cityQuery.lat}&lon=${cityQuery.lon}&units=metric&appid=${API_KEY}`),
-                    fetch(`${BASE_URL}/data/2.5/forecast?lat=${cityQuery.lat}&lon=${cityQuery.lon}&units=metric&appid=${API_KEY}`)
-                ])
-                if(!currentRes.ok || !forecastRes.ok) {
-                    throw new Error('Error Fetching Weather');
-                }
-
-                const weatherData = await currentRes.json();
-                const forecastData = await forecastRes.json();
-                setWeather(weatherData);
-                setForecast(forecastData.list);
-            } catch(err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchweatherData();
+        if (onLoadName) setOnLoadName('')
+        fetchweatherData(cityQuery.lat, cityQuery.lon);
 
     }, [cityQuery])
 
@@ -74,7 +100,7 @@ function WeatherApp() {
                 <p>{error}</p>
             )}
             {weather && (
-                <WeatherCard weather={weather} />
+                <WeatherCard weather={weather} demoName={onLoadName} />
             )}
             {forecast && (
                 <ForecastDiv forecast={forecast}/>

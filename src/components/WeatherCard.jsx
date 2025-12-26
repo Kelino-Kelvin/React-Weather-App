@@ -1,7 +1,7 @@
 import { getWeatherTheme } from "../utils/WeatherCardtheme";
 
 
-function WeatherCard({ weather }) {
+function WeatherCard({ weather, demoName }) {
 
     const icon = weather.weather[0].icon;
     const description = weather.weather[0].description;
@@ -15,7 +15,11 @@ function WeatherCard({ weather }) {
             <div className={`flex flex-col px-3 pt-7 pb-10 w-[90%] rounded-[32px] ${theme.bg} ${theme.text}`}>
                 <div className="text-center md:px-14 md:text-left">
                     <h2 className="text-xl md:text-2xl font-semibold">
-                        {weather.name}, {weather.sys.country}
+                        {demoName
+                            ? `${demoName} - Today`
+                            : `${weather.name}, ${weather.sys.country} - Today`
+                        }
+                        
                     </h2>
                 </div>
 
