@@ -34,8 +34,20 @@ function WeatherApp() {
                 fetch(`${BASE_URL}/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`),
                 fetch(`${BASE_URL}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
             ])
-            if(!currentRes.ok || !forecastRes.ok) {
-                throw new Error('Error Fetching Weather');
+
+            if (!currentRes.ok || !forecastRes.ok) {
+                const status = currentRes.status || forecastRes.status;
+
+                let message = "Unable to fetch weather";
+
+                if (status === 401) {
+                message = "Weather service unavailable";
+                } else if (status === 429) {
+                message = "Too many requests. Try again later.";
+                }
+
+                setError(message);
+                return;
             }
 
             const weatherData = await currentRes.json();
