@@ -52,10 +52,19 @@ function WeatherApp() {
 
             const weatherData = await currentRes.json();
             const forecastData = await forecastRes.json();
+
+            if (
+                (weatherData.cod && Number(weatherData.cod) !== 200) ||
+                (forecastData.cod && Number(forecastData.cod) !== 200)
+            ) {
+                setError("Weather data unavailable");
+                return;
+            }
+
             setWeather(weatherData);
             setForecast(forecastData.list);
         } catch(err) {
-            setError(err.message);
+            setError("Network Error. Check your connection");
         } finally {
             setLoading(false);
         }
